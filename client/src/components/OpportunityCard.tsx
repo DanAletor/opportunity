@@ -32,8 +32,9 @@ export default function OpportunityCard({ opportunity, onViewOpportunity }: Oppo
     }
   };
 
-  const getLocationIcon = (eligibility: string) => {
-    return eligibility.toLowerCase() === 'international' ? 'fas fa-globe' : 'fas fa-map-marker-alt';
+  const getLocationIcon = (location: string) => {
+    if (!location) return 'fas fa-map-marker-alt';
+    return location.toLowerCase().includes('international') ? 'fas fa-globe' : 'fas fa-map-marker-alt';
   };
 
   return (
@@ -52,19 +53,40 @@ export default function OpportunityCard({ opportunity, onViewOpportunity }: Oppo
               <span>Deadline: {opportunity.deadline}</span>
             </span>
             <span className="meta-item">
-              <i className={getLocationIcon(opportunity.eligibility)}></i>
-              <span>Eligible: {opportunity.eligibility}</span>
+              <i className={getLocationIcon(opportunity.location)}></i>
+              <span>{opportunity.location}</span>
             </span>
+            <span className="meta-item">
+              <i className="fas fa-globe-americas"></i>
+              <span>{opportunity.continent}</span>
+            </span>
+            {opportunity.organization && (
+              <span className="meta-item">
+                <i className="fas fa-building"></i>
+                <span>{opportunity.organization}</span>
+              </span>
+            )}
           </div>
         </div>
         <div className="col-lg-3 d-flex align-items-center justify-content-end">
-          <a 
-            href="#" 
-            className="view-opportunity-btn"
-            onClick={handleViewClick}
-          >
-            View Opportunity
-          </a>
+          {opportunity.link ? (
+            <a 
+              href={opportunity.link} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="view-opportunity-btn"
+            >
+              View Opportunity
+            </a>
+          ) : (
+            <a 
+              href="#" 
+              className="view-opportunity-btn"
+              onClick={handleViewClick}
+            >
+              View Details
+            </a>
+          )}
         </div>
       </div>
     </div>

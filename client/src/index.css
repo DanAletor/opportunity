@@ -78,15 +78,17 @@
   font-size: 2.5rem;
   font-weight: 400;
   letter-spacing: 2px;
-  color: hsl(var(--primary-dark));
+  color: hsl(var(--accent-blue));
   text-decoration: none;
   display: inline-block;
   transition: color 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0, 102, 255, 0.1);
 }
 
 .tasck-logo:hover {
-  color: hsl(var(--accent-blue));
+  color: hsl(var(--accent-blue-dark));
   text-decoration: none;
+  transform: scale(1.05);
 }
 
 .main-title {
@@ -112,15 +114,89 @@
 }
 
 .preference-tag {
-  background-color: hsl(var(--card-background));
-  border: 1px solid hsl(var(--border-light));
+  background-color: hsl(var(--accent-blue-light));
+  border: 1px solid hsl(var(--accent-blue));
   border-radius: 25px;
   padding: 0.75rem 1.5rem;
   margin: 0.25rem;
   display: inline-block;
   font-size: 0.95rem;
-  color: hsl(var(--primary-dark));
+  color: hsl(var(--accent-blue-dark));
   font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.search-container {
+  background: linear-gradient(135deg, hsl(var(--accent-blue-light)), hsl(var(--card-background)));
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid hsl(var(--border-light));
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.1);
+}
+
+.search-input {
+  border: 2px solid hsl(var(--border-light));
+  border-radius: 12px;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: hsl(var(--card-background));
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: hsl(var(--accent-blue));
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.continent-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.continent-btn {
+  background-color: hsl(var(--card-background));
+  border: 2px solid hsl(var(--border-light));
+  color: hsl(var(--secondary-gray));
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.continent-btn:hover {
+  border-color: hsl(var(--accent-blue));
+  color: hsl(var(--accent-blue));
+  transform: translateY(-2px);
+}
+
+.continent-btn.active {
+  background-color: hsl(var(--accent-blue));
+  border-color: hsl(var(--accent-blue));
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+.refresh-btn {
+  background: linear-gradient(135deg, hsl(var(--accent-blue)), hsl(var(--accent-blue-dark)));
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.2);
+}
+
+.refresh-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 102, 255, 0.3);
 }
 
 .opportunity-card {
