@@ -53,12 +53,12 @@ export default function OpportunityCard({ opportunity, onViewOpportunity }: Oppo
               <span>Deadline: {opportunity.deadline}</span>
             </span>
             <span className="meta-item">
-              <i className={getLocationIcon(opportunity.location)}></i>
-              <span>{opportunity.location}</span>
+              <i className={getLocationIcon(opportunity.location || '')}></i>
+              <span>{opportunity.location || 'Location TBD'}</span>
             </span>
             <span className="meta-item">
               <i className="fas fa-globe-americas"></i>
-              <span>{opportunity.continent}</span>
+              <span>{opportunity.continent || 'Global'}</span>
             </span>
             {opportunity.organization && (
               <span className="meta-item">
