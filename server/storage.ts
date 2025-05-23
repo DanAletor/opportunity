@@ -9,6 +9,8 @@ import {
   type UserPreferences,
   type InsertUserPreferences
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -26,7 +28,7 @@ export interface IStorage {
   updateUserPreferences(userId: number, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences | undefined>;
 }
 
-export class MemStorage implements IStorage {
+export class DatabaseStorage implements IStorage {
   private users: Map<number, User>;
   private opportunities: Map<number, Opportunity>;
   private userPreferences: Map<number, UserPreferences>;
@@ -73,17 +75,16 @@ export class MemStorage implements IStorage {
         const values = this.parseCSVLine(line);
         if (values.length < headers.length) continue;
         
-        // Check if the description field actually contains a URL (common in RSS feeds)
-        const hasUrlInDescription = values[1] && values[1].startsWith('http');
-        
+        // Parse the Google Sheets data properly
+        // Looking at the data structure, it appears to be: Title, URL, Date, Description, etc.
         const opportunity: InsertOpportunity = {
           title: values[0] || '',
-          description: hasUrlInDescription ? (values[3] || '') : (values[1] || ''),
-          type: values[2] || '',
-          deadline: hasUrlInDescription ? `Deadline: ${values[4] || 'TBD'}` : (values[3] || ''),
+          description: values[3] || values[1] || '',
+          type: values[2] || 'Opportunity',
+          deadline: values[3] ? values[3].substring(0, 100) : 'TBD',
           location: values[4] || 'Global',
           continent: values[5] || 'Global',
-          link: hasUrlInDescription ? values[1] : (values[6] || null),
+          link: (values[1] && values[1].startsWith('http')) ? values[1] : null,
           organization: values[7] || null,
         };
         
@@ -230,4 +231,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
