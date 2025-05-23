@@ -8,7 +8,11 @@ interface OpportunityCardProps {
 export default function OpportunityCard({ opportunity, onViewOpportunity }: OpportunityCardProps) {
   const handleViewClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    onViewOpportunity?.(opportunity);
+    if (opportunity.link) {
+      window.open(opportunity.link, '_blank', 'noopener,noreferrer');
+    } else {
+      onViewOpportunity?.(opportunity);
+    }
   };
 
   const getIconForType = (type: string) => {
@@ -69,15 +73,13 @@ export default function OpportunityCard({ opportunity, onViewOpportunity }: Oppo
           </div>
         </div>
         <div className="col-lg-3 d-flex align-items-center justify-content-end">
-          <a 
-            href={opportunity.link || '#'} 
-            target={opportunity.link ? "_blank" : "_self"}
-            rel={opportunity.link ? "noopener noreferrer" : ""}
+          <button 
             className="view-opportunity-btn"
-            onClick={!opportunity.link ? handleViewClick : undefined}
+            onClick={handleViewClick}
+            style={{ border: 'none', textDecoration: 'none' }}
           >
             {opportunity.link ? 'Apply Now' : 'View Details'}
-          </a>
+          </button>
         </div>
       </div>
     </div>
