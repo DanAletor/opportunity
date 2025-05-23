@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  
+  /* Custom TASCK variables */
+  --primary-dark: 210 6% 20%; /* #333333 */
+  --secondary-gray: 210 4% 40%; /* #666666 */
+  --light-gray: 210 4% 53%; /* #888888 */
+  --background-light: 210 11% 98%; /* #F8F9FA */
+  --card-background: 0 0% 100%; /* #FFFFFF */
+  --border-light: 220 8% 91%; /* #E9ECEF */
+  --accent-blue: 207 90% 54%; /* #007BFF */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background-color: hsl(var(--background-light));
+    color: hsl(var(--primary-dark));
+    line-height: 1.6;
+  }
+}
+
+/* TASCK Custom Styles */
+.tasck-logo {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2.5rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: hsl(var(--primary-dark));
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.tasck-logo:hover {
+  color: hsl(var(--accent-blue));
+  text-decoration: none;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 600;
+  color: hsl(var(--primary-dark));
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: hsl(var(--secondary-gray));
+  margin-bottom: 3rem;
+  font-weight: 400;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: hsl(var(--primary-dark));
+  margin-bottom: 1.5rem;
+}
+
+.preference-tag {
+  background-color: hsl(var(--card-background));
+  border: 1px solid hsl(var(--border-light));
+  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  margin: 0.25rem;
+  display: inline-block;
+  font-size: 0.95rem;
+  color: hsl(var(--primary-dark));
+  font-weight: 500;
+}
+
+.opportunity-card {
+  background-color: hsl(var(--card-background));
+  border: 1px solid hsl(var(--border-light));
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.opportunity-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.opportunity-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: hsl(var(--primary-dark));
+  margin-bottom: 0.5rem;
+}
+
+.opportunity-description {
+  color: hsl(var(--secondary-gray));
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.opportunity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: hsl(var(--light-gray));
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.view-opportunity-btn {
+  background-color: hsl(var(--card-background));
+  border: 1px solid hsl(var(--border-light));
+  color: hsl(var(--primary-dark));
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.view-opportunity-btn:hover {
+  background-color: hsl(var(--accent-blue));
+  color: white;
+  border-color: hsl(var(--accent-blue));
+  text-decoration: none;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.pagination .page-link {
+  color: hsl(var(--primary-dark));
+  border: 1px solid hsl(var(--border-light));
+  padding: 0.75rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.pagination .page-link:hover {
+  background-color: hsl(var(--accent-blue));
+  color: white;
+  border-color: hsl(var(--accent-blue));
+}
+
+.pagination .page-item.active .page-link {
+  background-color: hsl(var(--accent-blue));
+  border-color: hsl(var(--accent-blue));
+  color: white;
+}
+
+.container-custom {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .main-title {
+    font-size: 2.5rem;
+  }
+  
+  .opportunity-card {
+    padding: 1.5rem;
+  }
+  
+  .view-opportunity-btn {
+    position: static;
+    transform: none;
+    margin-top: 1rem;
+    display: block;
+    text-align: center;
+  }
+  
+  .opportunity-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
