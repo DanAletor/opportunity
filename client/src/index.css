@@ -150,14 +150,14 @@
   box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
 }
 
-.continent-filter {
+.location-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   margin-top: 1rem;
 }
 
-.continent-btn {
+.location-btn {
   background-color: hsl(var(--card-background));
   border: 2px solid hsl(var(--border-light));
   color: hsl(var(--secondary-gray));
@@ -169,13 +169,13 @@
   font-size: 0.9rem;
 }
 
-.continent-btn:hover {
+.location-btn:hover {
   border-color: hsl(var(--accent-blue));
   color: hsl(var(--accent-blue));
   transform: translateY(-2px);
 }
 
-.continent-btn.active {
+.location-btn.active {
   background-color: hsl(var(--accent-blue));
   border-color: hsl(var(--accent-blue));
   color: white;

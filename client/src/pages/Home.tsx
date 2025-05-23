@@ -21,12 +21,10 @@ interface UserPreferences {
   location: string;
 }
 
-const continents = ['All', 'Africa', 'Asia', 'Europe', 'North America', 'South America', 'Oceania'];
-
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedContinent, setSelectedContinent] = useState('All');
+  const [selectedLocation, setSelectedLocation] = useState('All');
   const queryClient = useQueryClient();
 
   const buildQueryKey = () => {
@@ -34,13 +32,17 @@ export default function Home() {
     params.set('page', currentPage.toString());
     params.set('limit', '5');
     if (searchQuery.trim()) params.set('search', searchQuery.trim());
-    if (selectedContinent !== 'All') params.set('continent', selectedContinent);
+    if (selectedLocation !== 'All') params.set('location', selectedLocation);
     return `/api/opportunities?${params.toString()}`;
   };
 
   const { data: opportunitiesData, isLoading: opportunitiesLoading } = useQuery<OpportunitiesResponse>({
-    queryKey: ['/api/opportunities', currentPage, searchQuery, selectedContinent],
+    queryKey: ['/api/opportunities', currentPage, searchQuery, selectedLocation],
     queryFn: () => fetch(buildQueryKey()).then(res => res.json()),
+  });
+
+  const { data: locationsData } = useQuery<{ locations: string[] }>({
+    queryKey: ['/api/locations'],
   });
 
   const { data: preferences } = useQuery<UserPreferences>({
@@ -72,8 +74,8 @@ export default function Home() {
     setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handleContinentChange = (continent: string) => {
-    setSelectedContinent(continent);
+  const handleLocationChange = (location: string) => {
+    setSelectedLocation(location);
     setCurrentPage(1); // Reset to first page when filtering
   };
 
@@ -148,16 +150,16 @@ export default function Home() {
         </form>
 
         <div>
-          <label className="form-label fw-semibold mb-2">Filter by Continent:</label>
-          <div className="continent-filter">
-            {continents.map((continent) => (
+          <label className="form-label fw-semibold mb-2">Filter by Location:</label>
+          <div className="location-filter">
+            {locationsData?.locations.map((location) => (
               <button
-                key={continent}
+                key={location}
                 type="button"
-                className={`continent-btn ${selectedContinent === continent ? 'active' : ''}`}
-                onClick={() => handleContinentChange(continent)}
+                className={`location-btn ${selectedLocation === location ? 'active' : ''}`}
+                onClick={() => handleLocationChange(location)}
               >
-                {continent}
+                {location}
               </button>
             ))}
           </div>

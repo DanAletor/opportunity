@@ -10,9 +10,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 5;
       const searchQuery = req.query.search as string;
-      const continent = req.query.continent as string;
+      const location = req.query.location as string;
       
-      const result = await storage.getOpportunities(page, limit, searchQuery, continent);
+      const result = await storage.getOpportunities(page, limit, searchQuery, location);
       
       res.json({
         opportunities: result.opportunities,
@@ -25,6 +25,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch opportunities" });
+    }
+  });
+
+  // Get unique locations for filtering
+  app.get("/api/locations", async (req, res) => {
+    try {
+      const locations = await storage.getUniqueLocations();
+      res.json({ locations: ['All', ...locations] });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch locations" });
     }
   });
 

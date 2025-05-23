@@ -69,24 +69,15 @@ export default function OpportunityCard({ opportunity, onViewOpportunity }: Oppo
           </div>
         </div>
         <div className="col-lg-3 d-flex align-items-center justify-content-end">
-          {opportunity.link ? (
-            <a 
-              href={opportunity.link} 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="view-opportunity-btn"
-            >
-              View Opportunity
-            </a>
-          ) : (
-            <a 
-              href="#" 
-              className="view-opportunity-btn"
-              onClick={handleViewClick}
-            >
-              View Details
-            </a>
-          )}
+          <a 
+            href={opportunity.link || '#'} 
+            target={opportunity.link ? "_blank" : "_self"}
+            rel={opportunity.link ? "noopener noreferrer" : ""}
+            className="view-opportunity-btn"
+            onClick={!opportunity.link ? handleViewClick : undefined}
+          >
+            {opportunity.link ? 'Apply Now' : 'View Details'}
+          </a>
         </div>
       </div>
     </div>

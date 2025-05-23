@@ -15,10 +15,11 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  getOpportunities(page?: number, limit?: number, searchQuery?: string, continent?: string): Promise<{ opportunities: Opportunity[], total: number }>;
+  getOpportunities(page?: number, limit?: number, searchQuery?: string, location?: string): Promise<{ opportunities: Opportunity[], total: number }>;
   getOpportunity(id: number): Promise<Opportunity | undefined>;
   createOpportunity(opportunity: InsertOpportunity): Promise<Opportunity>;
   refreshOpportunitiesFromSheet(): Promise<void>;
+  getUniqueLocations(): Promise<string[]>;
   
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
   createUserPreferences(preferences: InsertUserPreferences): Promise<UserPreferences>;
@@ -134,7 +135,7 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async getOpportunities(page: number = 1, limit: number = 5, searchQuery?: string, continent?: string): Promise<{ opportunities: Opportunity[], total: number }> {
+  async getOpportunities(page: number = 1, limit: number = 5, searchQuery?: string, location?: string): Promise<{ opportunities: Opportunity[], total: number }> {
     // Auto-refresh from sheet if it's been more than 5 minutes
     const now = Date.now();
     if (now - this.lastSheetUpdate > 5 * 60 * 1000) {
@@ -155,10 +156,10 @@ export class MemStorage implements IStorage {
       );
     }
     
-    // Apply continent filter
-    if (continent && continent !== 'All') {
+    // Apply location filter
+    if (location && location !== 'All') {
       allOpportunities = allOpportunities.filter(opp => 
-        opp.continent.toLowerCase() === continent.toLowerCase()
+        opp.location.toLowerCase().includes(location.toLowerCase())
       );
     }
     
@@ -168,6 +169,19 @@ export class MemStorage implements IStorage {
     const opportunities = allOpportunities.slice(startIndex, endIndex);
     
     return { opportunities, total };
+  }
+
+  async getUniqueLocations(): Promise<string[]> {
+    const allOpportunities = Array.from(this.opportunities.values());
+    const locations = new Set<string>();
+    
+    allOpportunities.forEach(opp => {
+      if (opp.location && opp.location.trim()) {
+        locations.add(opp.location.trim());
+      }
+    });
+    
+    return Array.from(locations).sort();
   }
 
   async getOpportunity(id: number): Promise<Opportunity | undefined> {
