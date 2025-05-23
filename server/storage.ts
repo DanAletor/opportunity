@@ -73,14 +73,17 @@ export class MemStorage implements IStorage {
         const values = this.parseCSVLine(line);
         if (values.length < headers.length) continue;
         
+        // Check if the description field actually contains a URL (common in RSS feeds)
+        const hasUrlInDescription = values[1] && values[1].startsWith('http');
+        
         const opportunity: InsertOpportunity = {
           title: values[0] || '',
-          description: values[1] || '',
+          description: hasUrlInDescription ? (values[3] || '') : (values[1] || ''),
           type: values[2] || '',
-          deadline: values[3] || '',
-          location: values[4] || '',
-          continent: values[5] || '',
-          link: values[6] || null,
+          deadline: hasUrlInDescription ? `Deadline: ${values[4] || 'TBD'}` : (values[3] || ''),
+          location: values[4] || 'Global',
+          continent: values[5] || 'Global',
+          link: hasUrlInDescription ? values[1] : (values[6] || null),
           organization: values[7] || null,
         };
         
