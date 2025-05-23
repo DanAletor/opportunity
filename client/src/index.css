@@ -28,10 +28,12 @@
   --primary-dark: 210 6% 20%; /* #333333 */
   --secondary-gray: 210 4% 40%; /* #666666 */
   --light-gray: 210 4% 53%; /* #888888 */
-  --background-light: 210 11% 98%; /* #F8F9FA */
+  --background-light: 210 20% 98%; /* #F8F9FA */
   --card-background: 0 0% 100%; /* #FFFFFF */
   --border-light: 220 8% 91%; /* #E9ECEF */
-  --accent-blue: 207 90% 54%; /* #007BFF */
+  --accent-blue: 210 100% 50%; /* #0066FF */
+  --accent-blue-light: 210 100% 95%; /* #E6F3FF */
+  --accent-blue-dark: 210 100% 40%; /* #0052CC */
 }
 
 .dark {

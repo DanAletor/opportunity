@@ -14,7 +14,10 @@ export const opportunities = pgTable("opportunities", {
   description: text("description").notNull(),
   type: text("type").notNull(),
   deadline: text("deadline").notNull(),
-  eligibility: text("eligibility").notNull(),
+  location: text("location").notNull(),
+  continent: text("continent").notNull(),
+  link: text("link"),
+  organization: text("organization"),
 });
 
 export const userPreferences = pgTable("user_preferences", {

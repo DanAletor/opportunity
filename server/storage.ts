@@ -15,9 +15,10 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  getOpportunities(page?: number, limit?: number): Promise<{ opportunities: Opportunity[], total: number }>;
+  getOpportunities(page?: number, limit?: number, searchQuery?: string, continent?: string): Promise<{ opportunities: Opportunity[], total: number }>;
   getOpportunity(id: number): Promise<Opportunity | undefined>;
   createOpportunity(opportunity: InsertOpportunity): Promise<Opportunity>;
+  refreshOpportunitiesFromSheet(): Promise<void>;
   
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
   createUserPreferences(preferences: InsertUserPreferences): Promise<UserPreferences>;
@@ -31,6 +32,7 @@ export class MemStorage implements IStorage {
   private currentUserId: number;
   private currentOpportunityId: number;
   private currentPreferencesId: number;
+  private lastSheetUpdate: number;
 
   constructor() {
     this.users = new Map();
@@ -39,74 +41,80 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentOpportunityId = 1;
     this.currentPreferencesId = 1;
+    this.lastSheetUpdate = 0;
     
-    // Seed with sample opportunities
-    this.seedOpportunities();
+    // Load opportunities from Google Sheets
+    this.refreshOpportunitiesFromSheet();
   }
 
-  private seedOpportunities() {
-    const sampleOpportunities: InsertOpportunity[] = [
-      {
-        title: "Music Production Grant",
-        description: "Funding for emerging music producers",
-        type: "Grant",
-        deadline: "May 31, 2024",
-        eligibility: "Nigeria"
-      },
-      {
-        title: "Open Call for Sound Artists",
-        description: "Seeking exploratory sound-based works",
-        type: "Exhibition",
-        deadline: "June 7, 2024",
-        eligibility: "International"
-      },
-      {
-        title: "Residency Program in Ghana",
-        description: "Artistic residency for music composers",
-        type: "Residency",
-        deadline: "July 15, 2024",
-        eligibility: "Ghana"
-      },
-      {
-        title: "Digital Music Innovation Fund",
-        description: "Supporting innovative music technology projects",
-        type: "Grant",
-        deadline: "August 20, 2024",
-        eligibility: "International"
-      },
-      {
-        title: "Collaborative Music Workshop",
-        description: "Multi-genre collaboration opportunity for musicians",
-        type: "Workshop",
-        deadline: "September 10, 2024",
-        eligibility: "Lagos"
-      },
-      {
-        title: "African Music Heritage Project",
-        description: "Documentation and preservation of traditional music",
-        type: "Project",
-        deadline: "October 15, 2024",
-        eligibility: "Africa"
-      },
-      {
-        title: "Youth Music Mentorship Program",
-        description: "Mentoring young musicians in production techniques",
-        type: "Mentorship",
-        deadline: "November 30, 2024",
-        eligibility: "Nigeria"
-      },
-      {
-        title: "Global Music Exchange",
-        description: "International collaboration for world music fusion",
-        type: "Exchange",
-        deadline: "December 20, 2024",
-        eligibility: "International"
+  async refreshOpportunitiesFromSheet(): Promise<void> {
+    try {
+      // Google Sheets CSV export URL for the public sheet
+      const sheetId = "1laNnvgOuZ1ovpg6Ql_NAzfi2lojrg8ijn2cA2noZpos";
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+      
+      const response = await fetch(csvUrl);
+      const csvText = await response.text();
+      
+      // Parse CSV data
+      const lines = csvText.split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      // Clear existing opportunities
+      this.opportunities.clear();
+      this.currentOpportunityId = 1;
+      
+      // Process each row (skip header)
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const values = this.parseCSVLine(line);
+        if (values.length < headers.length) continue;
+        
+        const opportunity: InsertOpportunity = {
+          title: values[0] || '',
+          description: values[1] || '',
+          type: values[2] || '',
+          deadline: values[3] || '',
+          location: values[4] || '',
+          continent: values[5] || '',
+          link: values[6] || null,
+          organization: values[7] || null,
+        };
+        
+        if (opportunity.title) {
+          await this.createOpportunity(opportunity);
+        }
       }
-    ];
+      
+      this.lastSheetUpdate = Date.now();
+      console.log(`Loaded ${this.opportunities.size} opportunities from Google Sheets`);
+    } catch (error) {
+      console.error('Failed to load opportunities from Google Sheets:', error);
+    }
+  }
 
-    sampleOpportunities.forEach(opportunity => {
-      this.createOpportunity(opportunity);
-    });
+  private parseCSVLine(line: string): string[] {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    result.push(current.trim());
+    return result;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -126,8 +134,34 @@ export class MemStorage implements IStorage {
     return user;
   }
 
-  async getOpportunities(page: number = 1, limit: number = 5): Promise<{ opportunities: Opportunity[], total: number }> {
-    const allOpportunities = Array.from(this.opportunities.values());
+  async getOpportunities(page: number = 1, limit: number = 5, searchQuery?: string, continent?: string): Promise<{ opportunities: Opportunity[], total: number }> {
+    // Auto-refresh from sheet if it's been more than 5 minutes
+    const now = Date.now();
+    if (now - this.lastSheetUpdate > 5 * 60 * 1000) {
+      await this.refreshOpportunitiesFromSheet();
+    }
+
+    let allOpportunities = Array.from(this.opportunities.values());
+    
+    // Apply search filter
+    if (searchQuery && searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      allOpportunities = allOpportunities.filter(opp => 
+        opp.title.toLowerCase().includes(query) ||
+        opp.description.toLowerCase().includes(query) ||
+        opp.type.toLowerCase().includes(query) ||
+        opp.location.toLowerCase().includes(query) ||
+        (opp.organization && opp.organization.toLowerCase().includes(query))
+      );
+    }
+    
+    // Apply continent filter
+    if (continent && continent !== 'All') {
+      allOpportunities = allOpportunities.filter(opp => 
+        opp.continent.toLowerCase() === continent.toLowerCase()
+      );
+    }
+    
     const total = allOpportunities.length;
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
@@ -142,7 +176,12 @@ export class MemStorage implements IStorage {
 
   async createOpportunity(insertOpportunity: InsertOpportunity): Promise<Opportunity> {
     const id = this.currentOpportunityId++;
-    const opportunity: Opportunity = { ...insertOpportunity, id };
+    const opportunity: Opportunity = { 
+      ...insertOpportunity, 
+      id,
+      link: insertOpportunity.link || null,
+      organization: insertOpportunity.organization || null
+    };
     this.opportunities.set(id, opportunity);
     return opportunity;
   }
@@ -155,7 +194,11 @@ export class MemStorage implements IStorage {
 
   async createUserPreferences(insertPreferences: InsertUserPreferences): Promise<UserPreferences> {
     const id = this.currentPreferencesId++;
-    const preferences: UserPreferences = { ...insertPreferences, id };
+    const preferences: UserPreferences = { 
+      ...insertPreferences, 
+      id,
+      userId: insertPreferences.userId || null
+    };
     this.userPreferences.set(id, preferences);
     return preferences;
   }

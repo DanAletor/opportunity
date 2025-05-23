@@ -4,13 +4,15 @@ import { storage } from "./storage";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Get opportunities with pagination
+  // Get opportunities with pagination, search, and filtering
   app.get("/api/opportunities", async (req, res) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 5;
+      const searchQuery = req.query.search as string;
+      const continent = req.query.continent as string;
       
-      const result = await storage.getOpportunities(page, limit);
+      const result = await storage.getOpportunities(page, limit, searchQuery, continent);
       
       res.json({
         opportunities: result.opportunities,
@@ -23,6 +25,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch opportunities" });
+    }
+  });
+
+  // Refresh opportunities from Google Sheets
+  app.post("/api/opportunities/refresh", async (req, res) => {
+    try {
+      await storage.refreshOpportunitiesFromSheet();
+      res.json({ message: "Opportunities refreshed successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to refresh opportunities" });
     }
   });
 
