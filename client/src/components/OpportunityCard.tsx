@@ -8,10 +8,12 @@ interface OpportunityCardProps {
 export default function OpportunityCard({ opportunity, onViewOpportunity }: OpportunityCardProps) {
   const handleViewClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (opportunity.link) {
-      window.open(opportunity.link, '_blank', 'noopener,noreferrer');
+    if (opportunity.link && opportunity.link.trim()) {
+      // Open the actual opportunity link in a new tab
+      window.open(opportunity.link.trim(), '_blank', 'noopener,noreferrer');
     } else {
-      onViewOpportunity?.(opportunity);
+      // Fallback for opportunities without links
+      alert(`No application link available for: ${opportunity.title}`);
     }
   };
 
